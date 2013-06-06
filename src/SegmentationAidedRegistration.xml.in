@@ -11,28 +11,28 @@
   <parameters>
     <label>IO</label>
     <description>Input/output parameters</description>
-    <image>
+    <image type="scalar">
       <name>preMRIFileName</name>
       <label>1st Grayscale-image</label>
       <channel>input</channel>
       <index>0</index>
       <description><![CDATA[Pre-op MRI]]></description>
     </image>
-    <image>
+    <image type="label">
       <name>preEndoFileName</name>
       <label>1st Binary-image</label>
       <channel>input</channel>
       <index>1</index>
       <description><![CDATA[0/1 binary segmentation image of the 1st Grayscale-image]]></description>
     </image>
-    <image>
+    <image type="scalar">
       <name>postMRIFileName</name>
       <label>2nd Grayscale-image</label>
       <channel>input</channel>
       <index>2</index>
       <description><![CDATA[2nd Grayscale-image, to be registered to the 1st Grayscale-image]]></description>
     </image>
-    <image>
+    <image type="label">
       <name>postEndoFileName</name>
       <label>2nd Binary-image</label>
       <channel>input</channel>
