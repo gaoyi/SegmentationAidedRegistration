@@ -24,13 +24,13 @@
 // local
 #include "reg_3d_affine_mse.h"
 
-namespace afibReg
+namespace gth818n
 {
 
   //  The following section of code implements a Command observer
   //  used to monitor the evolution of the registration process.
   //
-  class CommandIterationUpdate : public itk::Command 
+  class CommandIterationUpdate : public itk::Command
   {
   public:
     typedef  CommandIterationUpdate   Self;
@@ -50,7 +50,7 @@ namespace afibReg
 
     void Execute(const itk::Object * object, const itk::EventObject & event)
     {
-      OptimizerPointer optimizer = 
+      OptimizerPointer optimizer =                      \
         dynamic_cast< OptimizerPointer >( object );
       if( ! itk::IterationEvent().CheckEvent( &event ) )
         {
@@ -123,30 +123,30 @@ namespace afibReg
     optimizer->SetScales( optimizerScales );
 
     double steplength = 0.1;
-    optimizer->SetMaximumStepLength( steplength ); 
+    optimizer->SetMaximumStepLength( steplength );
     optimizer->SetMinimumStepLength( 0.0005 );
 
     unsigned int maxNumberOfIterations = 2000;
     optimizer->SetNumberOfIterations( maxNumberOfIterations );
     optimizer->MinimizeOn();
 
-    try 
-      { 
-        registration->StartRegistration(); 
+    try
+      {
+        registration->StartRegistration();
         //     std::cout << "Optimizer stop condition: "
         //               << registration->GetOptimizer()->GetStopConditionDescription()
         //               << std::endl;
-      } 
-    catch( itk::ExceptionObject & err ) 
-      { 
-        std::cerr << "ExceptionObject caught !" << std::endl; 
-        std::cerr << err << std::endl; 
+      }
+    catch( itk::ExceptionObject & err )
+      {
+        std::cerr << "ExceptionObject caught !" << std::endl;
+        std::cerr << err << std::endl;
         exit(-1);
-      } 
+      }
 
     // record final cost function value
     finalCost = optimizer->GetValue();
-  
+
     //   //tst
     //   std::cout<<"finalCostValue = "<<finalCostValue<<std::endl;
     //   //tst//

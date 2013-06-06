@@ -23,7 +23,7 @@
 #include "reg_3d_demons.h"
 #include "utilities.h"
 
-namespace afibReg
+namespace gth818n
 {
   template<typename fix_image_t, typename moving_image_t, typename output_image_t>
   typename itk::Image< itk::Vector< float, fix_image_t::ImageDimension >, fix_image_t::ImageDimension >::Pointer

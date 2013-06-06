@@ -35,25 +35,25 @@ int main(int argc, char** argv)
   typedef itk::Image<LabelPixelType, Dimension> LabelImageType;
 
   // Read in images
-  ImageType::Pointer postMRI = afibReg::readImage<ImageType>(postMRIFileName.c_str());
-  ImageType::Pointer preMRI = afibReg::readImage<ImageType>(preMRIFileName.c_str());
+  ImageType::Pointer postMRI = gth818n::readImage<ImageType>(postMRIFileName.c_str());
+  ImageType::Pointer preMRI = gth818n::readImage<ImageType>(preMRIFileName.c_str());
 
-  ImageType::Pointer postEndo = afibReg::readImage<ImageType>(postEndoFileName.c_str());
-  ImageType::Pointer preEndo = afibReg::readImage<ImageType>(preEndoFileName.c_str());
+  ImageType::Pointer postEndo = gth818n::readImage<ImageType>(postEndoFileName.c_str());
+  ImageType::Pointer preEndo = gth818n::readImage<ImageType>(preEndoFileName.c_str());
 
 
   // affine register
   typedef itk::AffineTransform<double, Dimension> AffineTransformType;
   double finalRegCost = 0.0;
-  AffineTransformType::Pointer trans = afibReg::affineMSERegistration<ImageType, ImageType>(preEndo, postEndo, finalRegCost);
+  AffineTransformType::Pointer trans = gth818n::affineMSERegistration<ImageType, ImageType>(preEndo, postEndo, finalRegCost);
 
   double fillInValue = 0.0;
-  //ImageType::Pointer postToPreEndo = afibReg::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
-  ImageType::Pointer postToPreMRI = afibReg::transformImage<ImageType, ImageType>(trans, postMRI, preMRI, fillInValue);
+  //ImageType::Pointer postToPreEndo = gth818n::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
+  ImageType::Pointer postToPreMRI = gth818n::transformImage<ImageType, ImageType>(trans, postMRI, preMRI, fillInValue);
 
   // output
-  //afibReg::writeImage<ImageType>(postToPreEndo, postToPreEndoFileName.c_str());
-  afibReg::writeImage<ImageType>(postToPreMRI, postToPreMRIFileName.c_str());
+  //gth818n::writeImage<ImageType>(postToPreEndo, postToPreEndoFileName.c_str());
+  gth818n::writeImage<ImageType>(postToPreMRI, postToPreMRIFileName.c_str());
 
 
   return 0;

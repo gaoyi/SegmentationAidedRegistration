@@ -17,7 +17,7 @@
 
 #include <csignal>
 
-namespace afibReg
+namespace gth818n
 {
   /**
    * readImage
@@ -33,7 +33,7 @@ namespace afibReg
   /**
    * Cast image pixel type
    */
-  template< typename inputPixel_t, typename outputPixel_t > 
+  template< typename inputPixel_t, typename outputPixel_t >
   typename itk::Image<outputPixel_t, 3 >::Pointer
   castItkImage( typename itk::Image<inputPixel_t, 3>::Pointer inputImage );
 
@@ -41,12 +41,12 @@ namespace afibReg
   /**
    * Read a series of images.
    */
-  template< typename itkImage_t > 
+  template< typename itkImage_t >
   std::vector< typename itkImage_t::Pointer >
   readImageSeries( const std::vector< std::string >& imageNameList );
 
   /*============================================================
-   * readTextLineToListOfString   
+   * readTextLineToListOfString
    */
   template<typename TNull>
   std::vector< std::string > readTextLineToListOfString(const char* textFileName);
@@ -95,8 +95,8 @@ namespace afibReg
   /**
    * write a component of a vector image
    */
-  template< typename itkVectorImage_t > 
-  void 
+  template< typename itkVectorImage_t >
+  void
   writeVectorImage(typename itkVectorImage_t::Pointer img, const char *fileName, int component);
 
 
@@ -131,7 +131,7 @@ namespace afibReg
   extractROI(typename image_t::Pointer img, typename image_t::RegionType region);
 
 
-}// afibReg
+}// gth818n
 
 
 #include "utilities.hxx"

@@ -13,11 +13,11 @@
 // itk
 #include "itkAffineTransform.h"
 
-namespace afibReg
+namespace gth818n
 {
   /**
-   * AFFINE Transform the image. 
-   * 
+   * AFFINE Transform the image.
+   *
    * interpolationType = 0 for NN interp, 1 for linear interp, 2 for
    * bspline interp. Default is 1
    */
@@ -31,7 +31,7 @@ namespace afibReg
 
   /**
    * Warp image using vector image
-   * 
+   *
    * interpolationType = 0 for NN interp, 1 for linear interp, 2 for
    * bspline interp. Default is 1
    */
@@ -42,7 +42,7 @@ namespace afibReg
             typename OutputImageType::PixelType fillInValue, char interpolationType = 1);
 
 
-}// afibReg
+}// gth818n
 
 #include "transformImage.hxx"
 

@@ -22,7 +22,7 @@
 // local
 #include "transformImage.h"
 
-namespace afibReg
+namespace gth818n
 {
   template<typename InputImageType, typename OutputImageType>
   typename OutputImageType::Pointer
@@ -42,7 +42,7 @@ namespace afibReg
       }
     else if(interpolationType == 1)
       {
-        // linear 
+        // linear
         typedef itk::LinearInterpolateImageFunction<InputImageType, CoordinateRepresentationType> InterpolatorType;
         interpolator = InterpolatorType::New();
       }
@@ -67,7 +67,7 @@ namespace afibReg
     resampler->SetDefaultPixelValue( fillInValue );
     resampler->SetInterpolator(  interpolator  );
     resampler->Update();
-  
+
     return resampler->GetOutput();
   }
 
@@ -75,7 +75,7 @@ namespace afibReg
 
   /**
    * Warp image using vector image
-   * 
+   *
    * interpolationType = 0 for NN interp, 1 for linear interp, 2 for
    * bspline interp. Default is 1
    */
@@ -95,7 +95,7 @@ namespace afibReg
       }
     else if(interpolationType == 1)
       {
-        // linear 
+        // linear
         typedef itk::LinearInterpolateImageFunction<InputImageType, double> InterpolatorType;
         interpolator = InterpolatorType::New();
       }
@@ -132,7 +132,7 @@ namespace afibReg
   }
 
 
-}// afibReg
+}// gth818n
 
 
 

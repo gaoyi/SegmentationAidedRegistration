@@ -21,7 +21,7 @@
 // local
 #include "utilities.h"
 
-namespace afibReg
+namespace gth818n
 {
   /**
    * readImage
@@ -34,7 +34,7 @@ namespace afibReg
     reader->SetFileName(fileName);
 
     typename itkImage_t::Pointer image;
-    
+
     try
       {
         reader->Update();
@@ -42,8 +42,8 @@ namespace afibReg
       }
     catch ( itk::ExceptionObject &err)
       {
-        std::cerr<< "ExceptionObject caught !" << std::endl; 
-        std::cerr<< err << std::endl; 
+        std::cerr<< "ExceptionObject caught !" << std::endl;
+        std::cerr<< err << std::endl;
         raise(SIGABRT);
       }
 
@@ -69,9 +69,9 @@ namespace afibReg
       }
     catch ( itk::ExceptionObject &err)
       {
-        std::cout << "ExceptionObject caught !" << std::endl; 
-        std::cout << err << std::endl; 
-        raise(SIGABRT);   
+        std::cout << "ExceptionObject caught !" << std::endl;
+        std::cout << err << std::endl;
+        raise(SIGABRT);
       }
   }
 
@@ -79,7 +79,7 @@ namespace afibReg
   /**
    * Read a series of images.
    */
-  template< typename inputPixel_t, typename outputPixel_t > 
+  template< typename inputPixel_t, typename outputPixel_t >
   typename itk::Image<outputPixel_t, 3 >::Pointer
   castItkImage( typename itk::Image<inputPixel_t, 3>::Pointer inputImage )
   {
@@ -102,7 +102,7 @@ namespace afibReg
   /**
    * Read a series of images.
    */
-  template< typename itkImage_t > 
+  template< typename itkImage_t >
   std::vector< typename itkImage_t::Pointer >
   readImageSeries( const std::vector< std::string >& imageNameList )
   {
@@ -112,7 +112,7 @@ namespace afibReg
 
 
     itkImageList_t imageSeries;
-    
+
     int n = imageNameList.size();
     for (int i = 0; i < n; ++i)
       {
@@ -130,8 +130,8 @@ namespace afibReg
           }
         catch ( itk::ExceptionObject &err)
           {
-            std::cerr<< "ExceptionObject caught !" << std::endl; 
-            std::cerr<< err << std::endl; 
+            std::cerr<< "ExceptionObject caught !" << std::endl;
+            std::cerr<< err << std::endl;
             raise(SIGABRT);
           }
 
@@ -143,7 +143,7 @@ namespace afibReg
   }
 
   /*============================================================
-   * readTextLineToListOfString   
+   * readTextLineToListOfString
    */
   template<typename TNull>
   std::vector< std::string > readTextLineToListOfString(const char* textFileName)
@@ -225,7 +225,7 @@ namespace afibReg
     thlder->SetUpperThreshold(upperT);
     thlder->SetLowerThreshold(lowerT);
     thlder->Update();
-  
+
     return thlder->GetOutput();
   }
 
@@ -247,7 +247,7 @@ namespace afibReg
     mul->SetInput(probMap);
     mul->SetConstant(c);
     mul->Update();
-    
+
     return mul->GetOutput();
   }
 
@@ -278,7 +278,7 @@ namespace afibReg
     thlder->SetUpperThreshold(upperT);
     thlder->SetLowerThreshold(lowerT);
     thlder->Update();
-  
+
     return thlder->GetOutput();
   }
 
@@ -300,8 +300,8 @@ namespace afibReg
   /**
    * write a component of a vector image
    */
-  template< typename itkVectorImage_t > 
-  void 
+  template< typename itkVectorImage_t >
+  void
   writeVectorImage(typename itkVectorImage_t::Pointer img, const char *fileName, int component)
   {
     typedef itk::Image<double, itkVectorImage_t::ImageDimension> itkImage_t;
@@ -334,9 +334,9 @@ namespace afibReg
       }
     catch ( itk::ExceptionObject &err)
       {
-        std::cout << "ExceptionObject caught !" << std::endl; 
-        std::cout << err << std::endl; 
-        abort();   
+        std::cout << "ExceptionObject caught !" << std::endl;
+        std::cout << err << std::endl;
+        abort();
       }
   }
 
@@ -431,7 +431,7 @@ namespace afibReg
         nonZeroRegion.SetIndex( startIdx );
       }
 
-    
+
     return nonZeroRegion;
   }
 
@@ -462,7 +462,7 @@ namespace afibReg
     sz[1] = std::min(entireSize[1] - start[1], 7*sz[1]/5);
     sz[2] = std::min(entireSize[2] - start[2], 7*sz[2]/5);
 
-    
+
     /**********************************************************************************
     {
       //tst
@@ -500,7 +500,7 @@ namespace afibReg
 
 
   /**
-   * Crop the image by the non-zero region given by the mask 
+   * Crop the image by the non-zero region given by the mask
    */
   template<typename MaskImageType >
   typename MaskImageType::Pointer
@@ -516,6 +516,6 @@ namespace afibReg
   }
 
 
-}// afibReg
+}// gth818n
 
 #endif

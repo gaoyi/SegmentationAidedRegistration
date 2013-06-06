@@ -8,7 +8,7 @@
 
 #include "itkAffineTransform.h"
 
-namespace afibReg
+namespace gth818n
 {
   template<typename fix_image_t, typename moving_image_t>
   itk::AffineTransform<double, 3>::Pointer
