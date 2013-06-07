@@ -130,6 +130,16 @@ namespace gth818n
   typename image_t::Pointer
   extractROI(typename image_t::Pointer img, typename image_t::RegionType region);
 
+  /**
+   * Generate an all-zero image the same size/origin/spacing/etc. as
+   * referenceImg, inside of whick, the roiRegion is the roiImg
+   */
+  template<typename image_t>
+  typename image_t::Pointer
+  antiExtractROI(typename image_t::ConstPointer roiImg, const typename image_t::RegionType roiRegion, \
+                 typename image_t::ConstPointer referenceImg);
+
+
 
 }// gth818n
 

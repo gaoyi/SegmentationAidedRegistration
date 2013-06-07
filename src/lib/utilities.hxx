@@ -516,6 +516,55 @@ namespace gth818n
   }
 
 
+  /**
+   * Generate an all-zero image the same size/origin/spacing/etc. as
+   * referenceImg, inside of whick, the roiRegion is the roiImg
+   */
+  template<typename image_t>
+  typename image_t::Pointer
+  antiExtractROI(typename image_t::ConstPointer roiImg, const typename image_t::RegionType roiRegion, \
+                 typename image_t::ConstPointer referenceImg)
+  {
+    /********************************************************************************
+    {
+      //tst
+      std::cout<<"\t in antiExtractROI\n"<<std::flush;
+      std::cout<<"\t roiImg.GetLargestPossibleRegion() = "<<roiImg->GetLargestPossibleRegion()<<std::endl<<std::flush;
+      std::cout<<"\t roiRegion = "<<roiRegion<<std::endl<<std::flush;
+      std::cout<<"\t referenceImg.GetLargestPossibleRegion() = "<<referenceImg->GetLargestPossibleRegion()<<std::endl<<std::flush;
+      //tst//
+    }
+    ********************************************************************************/
+
+    typedef typename image_t::Pointer imagePointer_t;
+
+    imagePointer_t largeImage = image_t::New();
+    largeImage->SetRegions( referenceImg->GetLargestPossibleRegion() );
+    largeImage->Allocate();
+
+    largeImage->FillBuffer(0);
+    largeImage->CopyInformation(referenceImg);
+
+
+    typedef itk::ImageRegionIterator< image_t > itkImageRegionIterator_t;
+    typedef itk::ImageRegionConstIterator< image_t > itkImageRegionConstIterator_t;
+
+    {
+      itkImageRegionConstIterator_t itROI(roiImg, roiImg->GetLargestPossibleRegion());
+      itkImageRegionIterator_t itNew(largeImage, roiRegion);
+
+      itROI.GoToBegin();
+      itNew.GoToBegin();
+      for (; !itROI.IsAtEnd(); ++itROI, ++itNew)
+        {
+          itNew.Set(itROI.Get());
+        }
+    }
+
+    return largeImage;
+  }
+
+
 }// gth818n
 
 #endif
