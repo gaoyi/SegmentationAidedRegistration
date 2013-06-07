@@ -38,9 +38,11 @@ int main(int argc, char** argv)
   ImageType::Pointer postMRI = gth818n::readImage<ImageType>(postMRIFileName.c_str());
   ImageType::Pointer preMRI = gth818n::readImage<ImageType>(preMRIFileName.c_str());
 
-  ImageType::Pointer postEndo = gth818n::readImage<ImageType>(postEndoFileName.c_str());
-  ImageType::Pointer preEndo = gth818n::readImage<ImageType>(preEndoFileName.c_str());
+  ImageType::Pointer postEndoTmp = gth818n::readImage<ImageType>(postEndoFileName.c_str());
+  ImageType::Pointer preEndoTmp = gth818n::readImage<ImageType>(preEndoFileName.c_str());
 
+  ImageType::Pointer postEndo = gth818n::cropROIFromImage<ImageType>(postEndoTmp);
+  ImageType::Pointer preEndo = gth818n::cropROIFromImage<ImageType>(preEndoTmp);
 
   // affine register
   typedef itk::AffineTransform<double, Dimension> AffineTransformType;
@@ -48,12 +50,21 @@ int main(int argc, char** argv)
   AffineTransformType::Pointer trans = gth818n::affineMSERegistration<ImageType, ImageType>(preEndo, postEndo, finalRegCost);
 
   double fillInValue = 0.0;
-  //ImageType::Pointer postToPreEndo = gth818n::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
-  ImageType::Pointer postToPreMRI = gth818n::transformImage<ImageType, ImageType>(trans, postMRI, preMRI, fillInValue);
+  //ImageType::Pointer postToPreEndoAffine = gth818n::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
+  ImageType::Pointer postToPreMRIAffine = gth818n::transformImage<ImageType, ImageType>(trans, postMRI, preMRI, fillInValue);
+
+
+  // // demons register
+  // typedef itk::Image< itk::Vector< float, ImageType::ImageDimension >, ImageType::ImageDimension > DisplacementFieldType;
+  // DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndo, postToPreEndoAffine);
+
+  // ImageType::Pointer postToPreMRIDemons                                 \
+  //   = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsField, postToPreMRIAffine, preMRI, fillInValue);
+
 
   // output
-  //gth818n::writeImage<ImageType>(postToPreEndo, postToPreEndoFileName.c_str());
-  gth818n::writeImage<ImageType>(postToPreMRI, postToPreMRIFileName.c_str());
+  //gth818n::writeImage<ImageType>(postToPreMRIDemons, postToPreMRIFileName.c_str());
+  gth818n::writeImage<ImageType>(postToPreMRIAffine, postToPreMRIFileName.c_str());
 
 
   return 0;

@@ -112,6 +112,7 @@ namespace gth818n
     warper->SetInterpolator( interpolator );
     warper->SetOutputSpacing( referenceImage->GetSpacing() );
     warper->SetOutputOrigin( referenceImage->GetOrigin() );
+    warper->SetEdgePaddingValue( fillInValue );
     warper->SetDeformationField( vectorField );
     warper->Update();
 

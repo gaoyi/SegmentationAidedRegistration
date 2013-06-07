@@ -25,11 +25,10 @@
 
 namespace gth818n
 {
-  template<typename fix_image_t, typename moving_image_t, typename output_image_t>
+  template<typename fix_image_t, typename moving_image_t>
   typename itk::Image< itk::Vector< float, fix_image_t::ImageDimension >, fix_image_t::ImageDimension >::Pointer
   reg_3d_demons(typename fix_image_t::Pointer fixImg,                   \
-                typename moving_image_t::Pointer movingImg,             \
-                typename moving_image_t::PixelType fillInVal)
+                typename moving_image_t::Pointer movingImg)
   {
     const unsigned int Dimension = fix_image_t::ImageDimension;
 
@@ -47,7 +46,7 @@ namespace gth818n
     filter->SetFixedImage( fixImgInternal );
     filter->SetMovingImage( movingImgInternal );
 
-    filter->SetNumberOfIterations( 100 );
+    filter->SetNumberOfIterations( 2000 );
     filter->SetStandardDeviations( 1.0 );
 
     filter->Update();
