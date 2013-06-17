@@ -47,7 +47,7 @@
       <name>deformableRegistrationLocally</name>
       <longflag>--deformableRegistrationLocally</longflag>
       <description><![CDATA[Only apply the deformable registration locally around the target. This saves running time significantly comparing to deformably registering the entire volumes.]]></description>
-      <label>Deformable registration locally?</label>
+      <label>Deformable registration locally? (Uncheck causes LONG running time)</label>
       <default>true</default>
     </boolean>
   </parameters>
