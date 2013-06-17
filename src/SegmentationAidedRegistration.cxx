@@ -16,19 +16,6 @@ int main(int argc, char** argv)
 {
   PARSE_ARGS;
 
-  // if (argc < 7)
-  //   {
-  //     std::cerr<<"args: postMRI preMRI postEndo preEndo postToPreMRI postToPreEndo\n";
-  //     exit(-1);
-  //   }
-
-  // std::string postMRIFileName(argv[1]);
-  // std::string preMRIFileName(argv[2]);
-  // std::string postEndoFileName(argv[3]);
-  // std::string preEndoFileName(argv[4]);
-  // std::string postToPreMRIFileName(argv[5]);
-  // std::string postToPreEndoFileName(argv[6]);
-
   typedef float PixelType;
   const unsigned int Dimension = 3;
   typedef itk::Image<PixelType, Dimension> ImageType;
@@ -63,8 +50,6 @@ int main(int argc, char** argv)
   AffineTransformType::Pointer trans = gth818n::affineMSERegistration<ImageType, ImageType>(preEndo, postEndo, finalRegCost);
 
   double fillInValue = 0.0;
-  //
-
 
   // demons register
   typedef itk::Vector< float, ImageType::ImageDimension > VectorType;
@@ -90,11 +75,6 @@ int main(int argc, char** argv)
 
       // deformable registration only around the target regions
 
-      // crop affine registered images
-      // typename ImageType::RegionType ROIRegion = gth818n::computeNonZeroRegion<ImageType>(postToPreEndoAffineFull);
-      // typename ImageType::RegionType enlargedROIRegion = gth818n::enlargeNonZeroRegion<ImageType>(postToPreEndoAffineFull, ROIRegion);
-      // typename ImageType::Pointer postToPreEndoAffineFullCropped = gth818n::extractROI<ImageType>(postToPreEndoAffineFull, enlargedROIRegion);
-
       DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndo, postToPreEndoAffine);
 
       ImageType::Pointer postToPreMRIDemons                                 \
@@ -102,9 +82,6 @@ int main(int argc, char** argv)
 
       gth818n::writeImage<ImageType>(postToPreMRIDemons, postToPreMRIFileName.c_str());
     }
-
-
-
 
   return 0;
 }
