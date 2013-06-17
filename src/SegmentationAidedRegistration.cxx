@@ -63,64 +63,47 @@ int main(int argc, char** argv)
   AffineTransformType::Pointer trans = gth818n::affineMSERegistration<ImageType, ImageType>(preEndo, postEndo, finalRegCost);
 
   double fillInValue = 0.0;
-  //ImageType::Pointer postToPreEndoAffineFull = gth818n::transformImage<ImageType, ImageType>(trans, postEndoFull, preEndoFull, fillInValue);
-  ImageType::Pointer postToPreMRIAffineFull = gth818n::transformImage<ImageType, ImageType>(trans, postMRIFull, preMRIFull, fillInValue);
+  //
 
-  ImageType::Pointer postToPreEndoAffine = gth818n::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
-  ImageType::Pointer postToPreMRIAffine = gth818n::transformImage<ImageType, ImageType>(trans, postMRIFull, preEndo, fillInValue);
 
   // demons register
   typedef itk::Vector< float, ImageType::ImageDimension > VectorType;
   typedef itk::Image< VectorType, ImageType::ImageDimension > DisplacementFieldType;
-  DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndo, postToPreEndoAffine);
 
-  ImageType::Pointer postToPreMRIDemons                                 \
-    = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsField, postToPreMRIAffine, preEndo, fillInValue);
+  if (!deformableRegistrationLocally)
+    {
+      ImageType::Pointer postToPreEndoAffineFull = gth818n::transformImage<ImageType, ImageType>(trans, postEndoFull, preEndoFull, fillInValue);
+      ImageType::Pointer postToPreMRIAffineFull = gth818n::transformImage<ImageType, ImageType>(trans, postMRIFull, preMRIFull, fillInValue);
 
-  // // crop affine registered images
-  // typename ImageType::RegionType ROIRegion = gth818n::computeNonZeroRegion<ImageType>(postToPreEndoAffineFull);
-  // typename ImageType::RegionType enlargedROIRegion = gth818n::enlargeNonZeroRegion<ImageType>(postToPreEndoAffineFull, ROIRegion);
-  // typename ImageType::Pointer postToPreEndoAffineFullCropped = gth818n::extractROI<ImageType>(postToPreEndoAffineFull, enlargedROIRegion);
+      // deformable registration on the entire volumes
+      DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndoFull, postToPreEndoAffineFull);
 
+      ImageType::Pointer postToPreMRIDemonsFull                                 \
+        = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsField, postToPreMRIAffineFull, preMRIFull, fillInValue);
 
-  // // demons register
-  // typedef itk::Vector< float, ImageType::ImageDimension > VectorType;
-  // typedef itk::Image< VectorType, ImageType::ImageDimension > DisplacementFieldType;
-  // DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndo, postToPreEndoAffineFullCropped);
+      gth818n::writeImage<ImageType>(postToPreMRIDemonsFull, postToPreMRIFileName.c_str());
+    }
+  else
+    {
+      ImageType::Pointer postToPreEndoAffine = gth818n::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
+      ImageType::Pointer postToPreMRIAffine = gth818n::transformImage<ImageType, ImageType>(trans, postMRIFull, preEndo, fillInValue);
 
-  // DisplacementFieldType::Pointer demonsFieldFull = DisplacementFieldType::New();
-  // demonsFieldFull->SetRegions(postToPreEndoAffineFull->GetLargestPossibleRegion() );
-  // demonsFieldFull->Allocate();
-  // demonsFieldFull->SetSpacing(postToPreEndoAffineFull->GetSpacing());
-  // VectorType v;
-  // v.Fill(0);
-  // demonsFieldFull->FillBuffer(v);
-  // demonsFieldFull->CopyInformation(postToPreEndoAffineFull);
+      // deformable registration only around the target regions
 
-  // {
-  //   typedef itk::ImageRegionIterator< DisplacementFieldType > itkImageRegionIterator_t;
-  //   //typedef itk::ImageRegionConstIterator< DisplacementFieldType > itkImageRegionConstIterator_t;
+      // crop affine registered images
+      // typename ImageType::RegionType ROIRegion = gth818n::computeNonZeroRegion<ImageType>(postToPreEndoAffineFull);
+      // typename ImageType::RegionType enlargedROIRegion = gth818n::enlargeNonZeroRegion<ImageType>(postToPreEndoAffineFull, ROIRegion);
+      // typename ImageType::Pointer postToPreEndoAffineFullCropped = gth818n::extractROI<ImageType>(postToPreEndoAffineFull, enlargedROIRegion);
 
-  //   {
-  //     itkImageRegionIterator_t itROI(demonsField, demonsField->GetLargestPossibleRegion());
-  //     itkImageRegionIterator_t itNew(demonsFieldFull, enlargedROIRegion);
+      DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndo, postToPreEndoAffine);
 
-  //     itROI.GoToBegin();
-  //     itNew.GoToBegin();
-  //     for (; !itROI.IsAtEnd(); ++itROI, ++itNew)
-  //       {
-  //         itNew.Set(itROI.Get());
-  //       }
-  //   }
-  // }
+      ImageType::Pointer postToPreMRIDemons                                 \
+        = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsField, postToPreMRIAffine, preEndo, fillInValue);
 
-  // ImageType::Pointer postToPreMRIDemons                                 \
-  //   = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsFieldFull, postToPreMRIAffineFull, preMRIFull, fillInValue);
+      gth818n::writeImage<ImageType>(postToPreMRIDemons, postToPreMRIFileName.c_str());
+    }
 
 
-  // output
-  gth818n::writeImage<ImageType>(postToPreMRIDemons, postToPreMRIFileName.c_str());
-  //gth818n::writeImage<ImageType>(postToPreMRIAffine, postToPreMRIFileName.c_str());
 
 
   return 0;
