@@ -1,112 +1,87 @@
-#include "itkImageFileWriter.h"
+//std
+#include <string>
 
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
+//local
+#include "reg_3d_affine_mse.h"
+#include "reg_3d_demons.h"
+#include "transformImage.h"
+#include "utilities.h"
+#include "itkImageRegionIterator.h"
 
-#include "itkPluginUtilities.h"
 
+// by slicer
 #include "SegmentationAidedRegistrationCLP.h"
 
-// Use an anonymous namespace to keep class types and function names
-// from colliding when module is used as shared object module.  Every
-// thing should be in an anonymous namespace except for the module
-// entry point, e.g. main()
-//
-namespace
-{
-
-template <class T>
-int DoIt( int argc, char * argv[], T )
+int main(int argc, char** argv)
 {
   PARSE_ARGS;
 
-  typedef    T InputPixelType;
-  typedef    T OutputPixelType;
+  typedef float PixelType;
+  const unsigned int Dimension = 3;
+  typedef itk::Image<PixelType, Dimension> ImageType;
 
-  typedef itk::Image<InputPixelType,  3> InputImageType;
-  typedef itk::Image<OutputPixelType, 3> OutputImageType;
+  typedef unsigned char LabelPixelType;
+  typedef itk::Image<LabelPixelType, Dimension> LabelImageType;
 
-  typedef itk::ImageFileReader<InputImageType>  ReaderType;
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  // Read in images
+  ImageType::Pointer postMRIFull = gth818n::readImage<ImageType>(postMRIFileName.c_str());
+  ImageType::Pointer preMRIFull = gth818n::readImage<ImageType>(preMRIFileName.c_str());
 
-  typedef itk::SmoothingRecursiveGaussianImageFilter<
-    InputImageType, OutputImageType>  FilterType;
+  ImageType::Pointer postEndoFull = gth818n::readImage<ImageType>(postEndoFileName.c_str());
+  ImageType::Pointer preEndoFull = gth818n::readImage<ImageType>(preEndoFileName.c_str());
 
-  typename ReaderType::Pointer reader = ReaderType::New();
-
-  reader->SetFileName( inputVolume.c_str() );
-
-  typename FilterType::Pointer filter = FilterType::New();
-  filter->SetInput( reader->GetOutput() );
-  filter->SetSigma( sigma );
-
-  typename WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( outputVolume.c_str() );
-  writer->SetInput( filter->GetOutput() );
-  writer->SetUseCompression(1);
-  writer->Update();
-
-  return EXIT_SUCCESS;
-}
-
-} // end of anonymous namespace
-
-int main( int argc, char * argv[] )
-{
-  PARSE_ARGS;
-
-  itk::ImageIOBase::IOPixelType     pixelType;
-  itk::ImageIOBase::IOComponentType componentType;
-
-  try
+  if (preMRIFull->GetLargestPossibleRegion() != preEndoFull->GetLargestPossibleRegion() )
     {
-    itk::GetImageType(inputVolume, pixelType, componentType);
-
-    // This filter handles all types on input, but only produces
-    // signed types
-    switch( componentType )
-      {
-      case itk::ImageIOBase::UCHAR:
-        return DoIt( argc, argv, static_cast<unsigned char>(0) );
-        break;
-      case itk::ImageIOBase::CHAR:
-        return DoIt( argc, argv, static_cast<char>(0) );
-        break;
-      case itk::ImageIOBase::USHORT:
-        return DoIt( argc, argv, static_cast<unsigned short>(0) );
-        break;
-      case itk::ImageIOBase::SHORT:
-        return DoIt( argc, argv, static_cast<short>(0) );
-        break;
-      case itk::ImageIOBase::UINT:
-        return DoIt( argc, argv, static_cast<unsigned int>(0) );
-        break;
-      case itk::ImageIOBase::INT:
-        return DoIt( argc, argv, static_cast<int>(0) );
-        break;
-      case itk::ImageIOBase::ULONG:
-        return DoIt( argc, argv, static_cast<unsigned long>(0) );
-        break;
-      case itk::ImageIOBase::LONG:
-        return DoIt( argc, argv, static_cast<long>(0) );
-        break;
-      case itk::ImageIOBase::FLOAT:
-        return DoIt( argc, argv, static_cast<float>(0) );
-        break;
-      case itk::ImageIOBase::DOUBLE:
-        return DoIt( argc, argv, static_cast<double>(0) );
-        break;
-      case itk::ImageIOBase::UNKNOWNCOMPONENTTYPE:
-      default:
-        std::cout << "unknown component type" << std::endl;
-        break;
-      }
+      std::cerr<<"Error: 1st grayscale-binary pair should have the same region.\n";
     }
 
-  catch( itk::ExceptionObject & excep )
+  if (postMRIFull->GetLargestPossibleRegion() != postEndoFull->GetLargestPossibleRegion() )
     {
-    std::cerr << argv[0] << ": exception caught !" << std::endl;
-    std::cerr << excep << std::endl;
-    return EXIT_FAILURE;
+      std::cerr<<"Error: 2nd grayscale-binary pair should have the same region.\n";
     }
-  return EXIT_SUCCESS;
+
+
+  ImageType::Pointer postEndo = gth818n::cropROIFromImage<ImageType>(postEndoFull);
+  ImageType::Pointer preEndo = gth818n::cropROIFromImage<ImageType>(preEndoFull);
+
+  // affine register
+  typedef itk::AffineTransform<double, Dimension> AffineTransformType;
+  double finalRegCost = 0.0;
+  AffineTransformType::Pointer trans = gth818n::affineMSERegistration<ImageType, ImageType>(preEndo, postEndo, finalRegCost);
+
+  double fillInValue = 0.0;
+
+  // demons register
+  typedef itk::Vector< float, ImageType::ImageDimension > VectorType;
+  typedef itk::Image< VectorType, ImageType::ImageDimension > DisplacementFieldType;
+
+  if (!deformableRegistrationLocally)
+    {
+      ImageType::Pointer postToPreEndoAffineFull = gth818n::transformImage<ImageType, ImageType>(trans, postEndoFull, preEndoFull, fillInValue);
+      ImageType::Pointer postToPreMRIAffineFull = gth818n::transformImage<ImageType, ImageType>(trans, postMRIFull, preMRIFull, fillInValue);
+
+      // deformable registration on the entire volumes
+      DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndoFull, postToPreEndoAffineFull);
+
+      ImageType::Pointer postToPreMRIDemonsFull                                 \
+        = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsField, postToPreMRIAffineFull, preMRIFull, fillInValue);
+
+      gth818n::writeImage<ImageType>(postToPreMRIDemonsFull, postToPreMRIFileName.c_str());
+    }
+  else
+    {
+      ImageType::Pointer postToPreEndoAffine = gth818n::transformImage<ImageType, ImageType>(trans, postEndo, preEndo, fillInValue);
+      ImageType::Pointer postToPreMRIAffine = gth818n::transformImage<ImageType, ImageType>(trans, postMRIFull, preEndo, fillInValue);
+
+      // deformable registration only around the target regions
+
+      DisplacementFieldType::Pointer demonsField = gth818n::reg_3d_demons<ImageType, ImageType>(preEndo, postToPreEndoAffine);
+
+      ImageType::Pointer postToPreMRIDemons                                 \
+        = gth818n::warpImage<ImageType, ImageType, DisplacementFieldType>(demonsField, postToPreMRIAffine, preEndo, fillInValue);
+
+      gth818n::writeImage<ImageType>(postToPreMRIDemons, postToPreMRIFileName.c_str());
+    }
+
+  return 0;
 }

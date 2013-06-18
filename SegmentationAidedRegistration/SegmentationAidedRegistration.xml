@@ -2,36 +2,63 @@
 <executable>
   <category>Examples</category>
   <title>SegmentationAidedRegistration</title>
-  <description><![CDATA[This is a CLI module (based on GaussianBlurImageFilter) bundled in an extension]]></description>
-  <version>0.0.1</version>
-  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/4.2/Modules/SegmentationAidedRegistration</documentation-url>
+  <description><![CDATA[Performe the registration with the aid from segmentation so that the segmented regions have close match.]]></description>
+  <version>1.0.0</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Modules/SegmentationAidedRegistration</documentation-url>
   <license>Slicer</license>
-  <contributor>Julien Jomier (Kitware), Stephen Aylward (Kitware), Jean-Christophe Fillion-Robin (Kitware)</contributor>
-  <acknowledgements>This work was partially funded by NIH grant 3P41RR013218-12S1</acknowledgements>
+  <contributor>Yi Gao (BWH/UAB), Liang-Jia Zhu (UAB), Josh Cates (Utah), Alan Morris (Utah), Danny Perry (Utah), Greg Gardner (Utah), Rob MacLeod (Utah), Sylvain Bouix (BWH), Allen Tannenbaum (UAB)</contributor>
+  <acknowledgements>This work was supported by NIH R01 MH82918, NAC and Na-mic</acknowledgements>
   <parameters>
-    <label>IO</label>
-    <description><![CDATA[Input/output parameters]]></description>
-    <double>
-      <name>sigma</name>
-      <longflag>sigma</longflag>
-      <flag>s</flag>
-      <label>Sigma</label>
-      <description><![CDATA[Sigma value in physical units (e.g., mm) of the Gaussian kernel]]></description>
-      <default>1.0</default>
-    </double>
-    <image>
-      <name>inputVolume</name>
-      <label>Input Volume</label>
+    <label>Input volumes</label>
+    <description>Input/output parameters</description>
+    <image type="scalar">
+      <name>preMRIFileName</name>
+      <label>Fixed Grayscale-image</label>
       <channel>input</channel>
       <index>0</index>
-      <description><![CDATA[Input volume]]></description>
+      <description><![CDATA[Fixed Grayscale-image]]></description>
     </image>
-    <image>
-      <name>outputVolume</name>
-      <label>Output Volume</label>
-      <channel>output</channel>
+    <image type="label">
+      <name>preEndoFileName</name>
+      <label>Fixed Binary-image</label>
+      <channel>input</channel>
       <index>1</index>
-      <description><![CDATA[Blurred Volume]]></description>
+      <description><![CDATA[0/1 binary segmentation image of the Fixed Grayscale-image]]></description>
+    </image>
+    <image type="scalar">
+      <name>postMRIFileName</name>
+      <label>Moving Grayscale-image</label>
+      <channel>input</channel>
+      <index>2</index>
+      <description><![CDATA[Moving Grayscale-image, to be registered to the Fixed Grayscale-image]]></description>
+    </image>
+    <image type="label">
+      <name>postEndoFileName</name>
+      <label>Moving Binary-image</label>
+      <channel>input</channel>
+      <index>3</index>
+      <description><![CDATA[0/1 binary segmentation image of the Moving Grayscale-image]]></description>
     </image>
   </parameters>
-</executable>
+  <parameters advanced="true">
+    <label>Advanced Parameters</label>
+    <description><![CDATA[Parameters for localized deformable registration]]></description>
+    <boolean>
+      <name>deformableRegistrationLocally</name>
+      <longflag>--deformableRegistrationLocally</longflag>
+      <description><![CDATA[Only apply the deformable registration locally around the target. This saves running time significantly comparing to deformably registering the entire volumes.]]></description>
+      <label>Deformable registration locally? (Uncheck causes LONG running time)</label>
+      <default>true</default>
+    </boolean>
+  </parameters>
+  <parameters>
+    <label>Output volumes</label>
+    <description><![CDATA[Output volume name]]></description>
+    <image>
+      <name>postToPreMRIFileName</name>
+      <label>Registration Result</label>
+      <channel>output</channel>
+      <index>4</index>
+      <description><![CDATA[Registered and warped Moving Grayscale-image (onto Fixed Grayscale-image)]]></description>
+    </image>
+  </parameters>
