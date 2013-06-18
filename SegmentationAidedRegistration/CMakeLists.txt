@@ -4,6 +4,7 @@ set(MODULE_NAME SegmentationAidedRegistration)
 
 #-----------------------------------------------------------------------------
 set(MODULE_INCLUDE_DIRECTORIES
+    ${EXTENSION_SOURCE_DIR}/${MODULE_NAME}/lib
   )
 
 set(MODULE_SRCS
