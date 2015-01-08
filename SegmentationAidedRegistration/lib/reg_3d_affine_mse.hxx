@@ -132,7 +132,7 @@ namespace gth818n
 
     try
       {
-        registration->StartRegistration();
+      registration->Update();
         //     std::cout << "Optimizer stop condition: "
         //               << registration->GetOptimizer()->GetStopConditionDescription()
         //               << std::endl;
