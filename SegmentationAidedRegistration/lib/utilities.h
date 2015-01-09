@@ -12,9 +12,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkBinaryThresholdImageFilter.h"
 
-#include "itkMultiplyByConstantImageFilter.h"
-
-
 #include <csignal>
 
 namespace gth818n
