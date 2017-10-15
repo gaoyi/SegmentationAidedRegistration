@@ -12,7 +12,7 @@
 #include "itkImageRegionIterator.h"
 #include "itkBinaryThresholdImageFilter.h"
 
-#include "itkMultiplyByConstantImageFilter.h"
+#include "itkMultiplyImageFilter.h"
 
 
 #include <csignal>

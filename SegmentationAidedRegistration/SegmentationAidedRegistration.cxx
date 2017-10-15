@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   typedef itk::Image<PixelType, Dimension> ImageType;
 
   typedef unsigned char LabelPixelType;
-  typedef itk::Image<LabelPixelType, Dimension> LabelImageType;
+  //typedef itk::Image<LabelPixelType, Dimension> LabelImageType;
 
   // Read in images
   ImageType::Pointer postMRIFull = gth818n::readImage<ImageType>(postMRIFileName.c_str());

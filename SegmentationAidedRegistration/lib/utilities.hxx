@@ -14,7 +14,7 @@
 #include "itkImageRegionConstIterator.h"
 #include "itkImageRegionIterator.h"
 
-#include "itkMultiplyByConstantImageFilter.h"
+#include "itkMultiplyImageFilter.h"
 
 #include "itkRegionOfInterestImageFilter.h"
 
@@ -240,7 +240,7 @@ namespace gth818n
   typename itk::Image<unsigned char, 3>::Pointer
   postProcessProbabilityMap(typename image_t::Pointer probMap, typename image_t::PixelType c)
   {
-    typedef itk::MultiplyByConstantImageFilter< image_t, typename image_t::PixelType, itk::Image<unsigned char, 3> > \
+    typedef itk::MultiplyImageFilter< image_t, typename image_t::PixelType, itk::Image<unsigned char, 3> > \
       itkMultiplyByConstantImageFilter_t;
 
     typename itkMultiplyByConstantImageFilter_t::Pointer mul = itkMultiplyByConstantImageFilter_t::New();
